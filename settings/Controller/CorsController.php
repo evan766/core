@@ -103,7 +103,7 @@ class CorsController extends Controller {
 	 * @return JSONResponse
 	 */
 	public function addDomain($domain) {
-		if ($this->isValidUrl($domain)) {
+		if ($this->isValidUrl($domain) && $this->isValidProtocol($domain)) {
 			$userId = $this->userId;
 			$domains = \json_decode($this->config->getUserValue($userId, 'core', 'domains', '[]'), true);
 			$domains = \array_filter($domains);
@@ -164,5 +164,15 @@ class CorsController extends Controller {
 	 */
 	private function isValidUrl($url) {
 		return (\filter_var($url, FILTER_VALIDATE_URL) !== false);
+	}
+
+	/**
+	 * Checks whether a protocol is valid
+	 * @param  string  $url URL to check
+	 * @return boolean      whether protocol is valid
+	 */
+	private function isValidProtocol($url) {
+		$protocol = \parse_url($url, PHP_URL_SCHEME);
+		return ($protocol === 'http' || $protocol === 'https');
 	}
 }
